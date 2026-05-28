@@ -1,0 +1,134 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  savedColleges   SavedCollege[]
+  savedComparisons SavedComparison[]
+  reviews         Review[]
+
+  @@map("users")
+}
+
+model College {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  location    String
+  city        String
+  state       String
+  type        String   // Government, Private, Deemed
+  established Int
+  ranking     Int?
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  totalFees   Int      // Annual fees in INR
+  description String
+  imageUrl    String?
+  website     String?
+  phone       String?
+  email       String?
+  accreditation String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses         Course[]
+  placements      Placement[]
+  reviews         Review[]
+  savedBy         SavedCollege[]
+  compareGroupsA  SavedComparison[] @relation("CollegeA")
+  compareGroupsB  SavedComparison[] @relation("CollegeB")
+  compareGroupsC  SavedComparison[] @relation("CollegeC")
+
+  @@map("colleges")
+}
+
+model Course {
+  id          String  @id @default(cuid())
+  collegeId   String
+  name        String
+  duration    String  // "4 Years", "2 Years"
+  degree      String  // B.Tech, MBA, etc.
+  fees        Int     // Per year in INR
+  seats       Int
+  eligibility String
+
+  college     College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@map("courses")
+}
+
+model Placement {
+  id              String  @id @default(cuid())
+  collegeId       String
+  year            Int
+  avgPackage      Int     // in LPA (lakhs per annum) * 100 to store as int
+  highestPackage  Int
+  placementRate   Float   // percentage
+  topRecruiters   String  // comma-separated
+
+  college         College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@map("placements")
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  collegeId   String
+  userId      String
+  rating      Float
+  title       String
+  body        String
+  pros        String?
+  cons        String?
+  createdAt   DateTime @default(now())
+
+  college     College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+model SavedCollege {
+  id        String   @id @default(cuid())
+  userId    String
+  collegeId String
+  createdAt DateTime @default(now())
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  college   College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, collegeId])
+  @@map("saved_colleges")
+}
+
+model SavedComparison {
+  id         String   @id @default(cuid())
+  userId     String
+  label      String
+  collegeAId String
+  collegeBId String
+  collegeCId String?
+  createdAt  DateTime @default(now())
+
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collegeA   College @relation("CollegeA", fields: [collegeAId], references: [id])
+  collegeB   College @relation("CollegeB", fields: [collegeBId], references: [id])
+  collegeC   College? @relation("CollegeC", fields: [collegeCId], references: [id])
+
+  @@map("saved_comparisons")
+}
