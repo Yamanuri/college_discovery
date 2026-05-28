@@ -1,6 +1,8 @@
 # CollegeDiscover
 
-Track B submission (College Discovery Platform), built as a full-stack MVP.
+**Submission by Yamanuri**
+
+Track B submission (College Discovery Platform) for the AI Software Engineer Internship, built as a full-stack MVP.
 
 The goal of this project is simple: help students discover colleges, compare options side by side, and make better decisions using structured data.
 

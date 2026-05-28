@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="min-h-screen">{children}</main>
           <footer className="bg-gray-900 text-gray-400 py-12 mt-20">
             <div className="max-w-7xl mx-auto px-4 text-center">
-              <p className="text-sm">© 2024 CollegeDiscover. Built for the internship demo task.</p>
+              <p className="text-sm">© 2024 CollegeDiscover. Built by Yamanuri for the AI Software Engineer Internship Demo Task.</p>
             </div>
           </footer>
         </AuthProvider>
